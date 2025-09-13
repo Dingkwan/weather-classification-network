@@ -86,7 +86,7 @@ for epoch in range(num_epochs):
 
     train_bar = tqdm(train_loader, desc=f"Epoch {epoch}/{num_epochs-1} [Train]", leave=False)
 
-    for images, labels in train_loader:
+    for images, labels in train_bar:
         images, labels = images.to(device), labels.to(device)
 
         optimizer.zero_grad()
@@ -105,7 +105,7 @@ for epoch in range(num_epochs):
     val_bar = tqdm(val_loader, desc=f"Epoch {epoch}/{num_epochs-1} [Val]", leave=False)
 
     with torch.no_grad():
-        for images, labels in val_loader:
+        for images, labels in val_bar:
             images, labels = images.to(device), labels.to(device)
             outputs = model(images)
             _, predicted = torch.max(outputs, 1)
