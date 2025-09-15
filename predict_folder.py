@@ -9,9 +9,8 @@ from model import WeatherCNN
 # ========== Config ==========
 model_path = "best85_epoch16_weather_cnn.pth"  # change to your best model
 class_names = ["cloudy", "foggy", "rainy", "shine", "sunrise"]
-
 folder = "/Users/dingkwanmok/Desktop/test/split_dataset/train/cloudy"  # change to your folder path
-
+# ============================
 
 device = (
     "mps" if torch.backends.mps.is_available() else

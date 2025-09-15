@@ -7,6 +7,7 @@ from model import WeatherCNN
 model_path = "best85_epoch16_weather_cnn.pth"  # change to your model file name
 class_names = ["cloudy", "foggy", "rainy", "shine", "sunrise"]  # class order must match training
 test_image = "/Users/dingkwanmok/Downloads/IMG_3743.jpeg"  # change to your test image path
+# ============================
 
 device = (
     "mps" if torch.backends.mps.is_available() else
