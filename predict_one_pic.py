@@ -14,13 +14,11 @@ device = (
     "cpu"
 )
 
-# ========== Preprocessing ==========
 transform = transforms.Compose([
     transforms.Resize((320, 320)),
     transforms.ToTensor(),
 ])
 
-# ========== Load Model ==========
 def load_model(model_path):
     model = WeatherCNN(num_classes=len(class_names))
     model.load_state_dict(torch.load(model_path, map_location=device))
@@ -28,7 +26,6 @@ def load_model(model_path):
     model.eval()
     return model
 
-# ========== Predict Function ==========
 def predict(image_path, model):
     image = Image.open(image_path).convert("RGB")
     img_tensor = transform(image).unsqueeze(0).to(device)
