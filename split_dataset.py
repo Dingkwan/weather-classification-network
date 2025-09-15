@@ -3,12 +3,12 @@ import shutil
 import random
 from pathlib import Path
 
-dataset_dir = "/Users/dingkwanmok/Desktop/test/dataset"   # 原始数据集路径
-output_dir = "/Users/dingkwanmok/Desktop/test/split_dataset"  # 输出路径
-val_ratio = 0.2   # 验证集比例
+dataset_dir = "/Users/dingkwanmok/Desktop/test/dataset"   # Original dataset path
+output_dir = "/Users/dingkwanmok/Desktop/test/split_dataset"  # Output Path
+val_ratio = 0.2   # Validation set ratio
 seed = 42
 
-# 需要处理的类别
+# Categories that need to be processed
 valid_classes = {"cloudy", "foggy", "rainy", "shine", "sunrise"}
 
 def split_dataset(dataset_dir, output_dir, val_ratio, seed):
@@ -17,15 +17,15 @@ def split_dataset(dataset_dir, output_dir, val_ratio, seed):
     dataset_dir = Path(dataset_dir)
     output_dir = Path(output_dir)
 
-    # 创建目标文件夹
+    # Create destination folder
     train_dir = output_dir / "train"
     val_dir = output_dir / "val"
     for d in [train_dir, val_dir]:
         d.mkdir(parents=True, exist_ok=True)
 
-    # 遍历每个类别
+    # Iterate over each category
     for class_name in os.listdir(dataset_dir):
-        if class_name.lower() not in valid_classes:  # 跳过 alien_test 或其他目录
+        if class_name.lower() not in valid_classes:  # Skip alien_test or other directories
             print(f"Skipping {class_name}")
             continue
 
@@ -40,7 +40,7 @@ def split_dataset(dataset_dir, output_dir, val_ratio, seed):
         val_images = images[:val_size]
         train_images = images[val_size:]
 
-        # 拷贝到目标文件夹
+        # Copy to destination folder
         for split, split_images in [("train", train_images), ("val", val_images)]:
             split_dir = output_dir / split / class_name
             split_dir.mkdir(parents=True, exist_ok=True)

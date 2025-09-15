@@ -4,10 +4,11 @@ import torch.optim as optim
 from torch.utils.data import DataLoader
 from torchvision import datasets, transforms
 from tqdm import tqdm
+from model import WeatherCNN
 
 
-# ============== 配置 ==============
-data_dir = "/Users/dingkwanmok/Desktop/test/split_dataset"   # 你的 train/val 路径
+# ============== Configuration ==============
+data_dir = "/Users/dingkwanmok/Desktop/test/split_dataset"   # train/val dataset path (the dataset after running split_dataset.py)
 batch_size = 32
 num_epochs = 30
 learning_rate = 0.001
@@ -19,7 +20,7 @@ device = (
 )
 print("Using device:", device)
 
-# ============== 数据增强 & 加载 ==============
+# ============== Data Augmentation & Loading ==============
 train_transform = transforms.Compose([
     transforms.Resize((320, 320)),
     transforms.RandomHorizontalFlip(),
@@ -41,45 +42,16 @@ val_loader   = DataLoader(val_dataset, batch_size=batch_size, shuffle=False)
 classes = train_dataset.classes
 print("Classes:", classes)
 
-# ============== 自定义 CNN 模型 ==============
-class WeatherCNN(nn.Module):
-    def __init__(self, num_classes):
-        super(WeatherCNN, self).__init__()
-        self.features = nn.Sequential(
-            nn.Conv2d(3, 32, kernel_size=3, stride=1, padding=1),  # [B, 32, 128, 128]
-            nn.ReLU(),
-            nn.MaxPool2d(2, 2),  # [B, 32, 64, 64]
-
-            nn.Conv2d(32, 64, kernel_size=3, stride=1, padding=1), # [B, 64, 64, 64]
-            nn.ReLU(),
-            nn.MaxPool2d(2, 2),  # [B, 64, 32, 32]
-
-            nn.Conv2d(64, 128, kernel_size=3, stride=1, padding=1), # [B, 128, 32, 32]
-            nn.ReLU(),
-            nn.MaxPool2d(2, 2),  # [B, 128, 16, 16]
-        )
-        self.classifier = nn.Sequential(
-            nn.Flatten(),
-            nn.Linear(128 * 40 * 40, 256),
-            nn.ReLU(),
-            nn.Dropout(0.5),
-            nn.Linear(256, num_classes)
-        )
-
-    def forward(self, x):
-        x = self.features(x)
-        x = self.classifier(x)
-        return x
-
+# Import model
 model = WeatherCNN(num_classes=len(classes)).to(device)
 
-# ============== 损失函数 & 优化器 ==============
+# ============== Loss Function & Optimizer ==============
 criterion = nn.CrossEntropyLoss()
 optimizer = optim.Adam(model.parameters(), lr=learning_rate)
 
 best_val_acc = 0.0
 
-# ============== 训练循环 ==============
+# ============== Training Loop ==============
 for epoch in range(num_epochs):
     model.train()
     running_loss = 0.0
@@ -96,9 +68,9 @@ for epoch in range(num_epochs):
         optimizer.step()
 
         running_loss += loss.item()
-        train_bar.set_postfix(loss=loss.item())  # 动态显示当前 batch 的 loss
+        train_bar.set_postfix(loss=loss.item())  # Dynamically display the current batch loss
 
-    # 验证
+    # Evaluation
     model.eval()
     correct, total = 0, 0
 
@@ -115,7 +87,7 @@ for epoch in range(num_epochs):
     val_acc = 100 * correct / total
     print(f"Epoch [{epoch}/{num_epochs-1}], Loss: {running_loss/len(train_loader):.4f}, Val Acc: {val_acc:.2f}%")
 
-    # ============== 保存模型 ==============
+    # ============== Save Model ==============
 
     if val_acc > best_val_acc:
         best_val_acc = val_acc
